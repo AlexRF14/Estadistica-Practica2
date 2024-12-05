@@ -1,0 +1,64 @@
+---
+title: "ProyectoEstadistica"
+output: html_document
+date: "2024-12-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyverse)
+
+datos <- read_delim("EstadisticaConst/8534.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+datos = filter(datos, Sexo != "Ambos sexos")
+datos = filter(datos, `Tipo de indicador` != "Ganancia (bruta) por hora y año")
+datos = filter(datos, `Tipo de discapacidad` != "No consta")
+datos = filter(datos, `Tipo de discapacidad` != "Mental")
+datos = filter(datos, `Tipo de discapacidad` != "Total")
+datos = filter(datos, `Total` > 0)
+
+print(datos)
+
+datos$Sexo = factor(datos$Sexo)
+ggplot(datos, aes(x = año, y = Total, col=Sexo)) + geom_point() + geom_line(aes(group=Sexo)) + facet_wrap(~ `Tipo de discapacidad`)
+
+df = data.frame(
+  'total' = datos$Total,
+  'sexo' = datos$Sexo,
+  'año' = datos$año,
+  'discapacidad' = datos$`Tipo de discapacidad`
+)
+
+df$año = factor(df$año, ordered = TRUE)
+model = lm(total ~ sexo + año * discapacidad, df)
+
+df$predictions = predict(model)
+
+ggplot(df, aes(x = año, y = predictions, col=sexo)) + geom_point() + geom_line(aes(group=sexo)) + facet_wrap(~ discapacidad)
+
+summary(model)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
