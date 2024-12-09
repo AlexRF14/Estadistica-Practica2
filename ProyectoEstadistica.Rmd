@@ -21,21 +21,29 @@ library(ggplot2)
 library(lubridate)
 library(tidyverse)
 
-datos <- read_delim("EstadisticaConst/8534.csv", 
-    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+# Lectura del archivo csv 
+datos <- read_delim("8534.csv", delim = ";", 
+    escape_double = FALSE, trim_ws = TRUE)
 
+# Filtrado de datos
 datos = filter(datos, Sexo != "Ambos sexos")
 datos = filter(datos, `Tipo de indicador` != "Ganancia (bruta) por hora y año")
 datos = filter(datos, `Tipo de discapacidad` != "No consta")
 datos = filter(datos, `Tipo de discapacidad` != "Mental")
 datos = filter(datos, `Tipo de discapacidad` != "Total")
-datos = filter(datos, `Total` > 0)
+datos = filter(datos, Total > 0)
 
+# Imprimir los datos filtrados
 print(datos)
 
+# Convertir la columna sexo y año en un factor
 datos$Sexo = factor(datos$Sexo)
+datos$año = factor(datos$año, ordered = TRUE)
+
+# Creación de gráfico 
 ggplot(datos, aes(x = año, y = Total, col=Sexo)) + geom_point() + geom_line(aes(group=Sexo)) + facet_wrap(~ `Tipo de discapacidad`)
 
+# Creación de un nuevo dataframe 
 df = data.frame(
   'total' = datos$Total,
   'sexo' = datos$Sexo,
@@ -43,22 +51,27 @@ df = data.frame(
   'discapacidad' = datos$`Tipo de discapacidad`
 )
 
+# Convertir la columna año en un factor ordenado con el nuevo dataframe
 df$año = factor(df$año, ordered = TRUE)
+
+# Modelo de regresión lineal
 model = lm(total ~ sexo + año * discapacidad, df)
 
+# Predicciones del modelo
 df$predictions = predict(model)
 
+# Gráfico de comparación entre las predicciones 
 ggplot(df, aes(x = año, y = predictions, col=sexo)) + geom_point() + geom_line(aes(group=sexo)) + facet_wrap(~ discapacidad)
 
+# Resumen del modelo ajustado
 summary(model)
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+## Conclusiones
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+Los datos aportan suficiente evidencia de que el sexo afecta de manera significativa las ganancias salariales. A través de nuestro análisis pudimos percatarnos de que existe una brecha salarial notable entre hombres y mujeres con la misma discapacidad, mediante el cual se demuestra que las personas de sexo femenino ganan una media de 3577.01 euros menos que las personas de sexo masculino (p-valor: 4.38e-12, IC: -4110.59542 -3043.4319).
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Hemos encontrado evidencia débil de que existe una diferencia salarial dependiendo de la discapacidad de las personas, en este caso se realizó la comparación de las discapacidades fisicas contra las sensoriales. Después de realizar el análisis se obtuvo que las personas con discapacidades sensoriales cuentan con una ganancia media de 511.52 más que las personas con discapacidades físicas (p-valor: 0.0593, IC: -22.06465  1045.0989). 
+
+Asimismo, mediante las gráficas se demuestra que de los años 2010-2022 las ganancias salariales de los hombres con discapacidad sensorial se encontraron por encima de los 22 mil euros anuales, en comparación de los que contaban con discapacidades físicas, los cuales comenzaron a aumentar sus ganancias a partir del año 2014. De igual forma, entre los años 2013-2022, las mujeres con discapacidad sensorial obtuvieron una ganancia media de más de 18 mil euros anuales, durante este tiempo también se observaron altibajos en el salario obtenido. En cambio, en las mujeres con discapacidad física se observa un descenso significativo en su salario durante los años 2010-2014, debido a la crisis economica del 2008, después de estos años sus ganancias anuales fueron ascendiendo hasta llegar a los 22 mil euros al año (IC año L: 1708.05916  4210.7796, IC año Q: 1974.31408  4477.0345).
