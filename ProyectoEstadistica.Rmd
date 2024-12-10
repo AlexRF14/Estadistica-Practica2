@@ -1,7 +1,7 @@
 ---
 title: "ProyectoEstadistica"
 output: html_document
-date: "2024-12-05"
+integrantes: "Maria Sánchez, Alejandro Rodriguez, Giulio Franccesco, Federico Javier Pordomingo, Myriam Figueroa, Gabriel Díaz"
 ---
 
 ```{r setup, include=FALSE}
@@ -22,8 +22,8 @@ library(lubridate)
 library(tidyverse)
 
 # Lectura del archivo csv 
-datos <- read_delim("8534.csv", delim = ";", 
-    escape_double = FALSE, trim_ws = TRUE)
+datos <- read_delim("8534.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 # Filtrado de datos
 datos = filter(datos, Sexo != "Ambos sexos")
@@ -31,9 +31,8 @@ datos = filter(datos, `Tipo de indicador` != "Ganancia (bruta) por hora y año")
 datos = filter(datos, `Tipo de discapacidad` != "No consta")
 datos = filter(datos, `Tipo de discapacidad` != "Mental")
 datos = filter(datos, `Tipo de discapacidad` != "Total")
-datos = filter(datos, Total > 0)
+datos = filter(datos, `Total` > 0)
 
-# Imprimir los datos filtrados
 print(datos)
 
 # Convertir la columna sexo y año en un factor
@@ -51,7 +50,7 @@ df = data.frame(
   'discapacidad' = datos$`Tipo de discapacidad`
 )
 
-# Convertir la columna año en un factor ordenado con el nuevo dataframe
+# Convertir la columna año en un factor ordenado
 df$año = factor(df$año, ordered = TRUE)
 
 # Modelo de regresión lineal
@@ -66,7 +65,19 @@ ggplot(df, aes(x = año, y = predictions, col=sexo)) + geom_point() + geom_line(
 # Resumen del modelo ajustado
 summary(model)
 ```
+## Preguntas a responder
 
+- ¿Existe una diferencial salarial más pronunciada entre hombres y mujeres en función de una misma discapacidad?
+- ¿Existe una diferencia salarial dependiendo de discapacidades distintas (físicas vs sensoriales)?
+- ¿A lo largo de los años, han aumentado los salarios de los discapacitados (tanto físicas como sensoriales)?
+
+## Limitaciones
+
+- Se realizó un filtrado de datos del archivo 8534.csv en las categorías sexo, tipo de indicador, tipo de discapacidad y total, debido a que, estas contaban con datos negativos, no significativos para la práctica o datos insuficientes para llevar a cabo el análisis. 
+
+- Se realizó una conversión a un factor para las categorías de sexo y año, con la finalidad de manejar datos categóricos de manera eficiente, ya que, estos mostraban decimales en el gráfico.
+
+- Al momento de realizar el modelo lineal, nos pudimos percatar de que el p-valor de la discapacidad sensorial se encontraba en el rango límite, por lo cual, no podiamos concluir que nuestra evidencia fuera significativa, es por esto, por lo que la hemos establecido como débil. 
 
 ## Conclusiones
 
@@ -74,4 +85,6 @@ Los datos aportan suficiente evidencia de que el sexo afecta de manera significa
 
 Hemos encontrado evidencia débil de que existe una diferencia salarial dependiendo de la discapacidad de las personas, en este caso se realizó la comparación de las discapacidades fisicas contra las sensoriales. Después de realizar el análisis se obtuvo que las personas con discapacidades sensoriales cuentan con una ganancia media de 511.52 más que las personas con discapacidades físicas (p-valor: 0.0593, IC: -22.06465  1045.0989). 
 
-Asimismo, mediante las gráficas se demuestra que de los años 2010-2022 las ganancias salariales de los hombres con discapacidad sensorial se encontraron por encima de los 22 mil euros anuales, en comparación de los que contaban con discapacidades físicas, los cuales comenzaron a aumentar sus ganancias a partir del año 2014. De igual forma, entre los años 2013-2022, las mujeres con discapacidad sensorial obtuvieron una ganancia media de más de 18 mil euros anuales, durante este tiempo también se observaron altibajos en el salario obtenido. En cambio, en las mujeres con discapacidad física se observa un descenso significativo en su salario durante los años 2010-2014, debido a la crisis economica del 2008, después de estos años sus ganancias anuales fueron ascendiendo hasta llegar a los 22 mil euros al año (IC año L: 1708.05916  4210.7796, IC año Q: 1974.31408  4477.0345).
+Asimismo, mediante las gráficas se demuestra que de los años 2010-2022 las ganancias salariales de los hombres con discapacidad sensorial se encontraron por encima de los 22 mil euros anuales, en comparación de los que contaban con discapacidades físicas, los cuales comenzaron a aumentar sus ganancias a partir del año 2014. De igual forma, entre los años 2013-2022, las mujeres con discapacidad sensorial obtuvieron una ganancia media de más de 18 mil euros anuales, durante este tiempo también se observaron altibajos en el salario obtenido. En cambio, en las mujeres con discapacidad física se observa un descenso significativo en su salario durante los años 2010-2014, debido a la crisis economica del 2008, después de estos años sus ganancias anuales fueron ascendiendo hasta llegar a los 22 mil euros al año.
+
+Debido a que el intervalo de confianza obtenido para los coeficientes de los años es positivo tanto para el componente lineal (ICL: [1708.06, 4210.78]) como para el componente cuadrático (ICQ: [1974.31, 4477.03]), se concluye que existe una tendencia general con curvatura convexa en la relación entre los años y las ganancias. Esto sugiere que, que a partir del año 2014 el salario aumenta a medida que el tiempo aumenta.
