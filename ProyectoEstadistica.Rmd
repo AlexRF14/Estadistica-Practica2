@@ -1,5 +1,5 @@
 ---
-title: "ProyectoEstadistica"
+title: "Proyecto Estadística"
 output: html_document
 integrantes: "Maria Sánchez, Alejandro Rodriguez, Giulio Franccesco, Federico Javier Pordomingo, Myriam Figueroa, Gabriel Díaz"
 ---
@@ -8,11 +8,19 @@ integrantes: "Maria Sánchez, Alejandro Rodriguez, Giulio Franccesco, Federico J
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Ganancia anual para los trabajadores asalariados según tengan o no discapacidad, enfocado en sexo y tipo de discapacidad
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Durante este proyecto de estadística, encontramos un archivo CSV con información detallada sobre los salarios de personas con discapacidad. Este conjunto de datos incluye variables como género, tipo de discapacidad (física o sensorial), y evolución de los salarios a lo largo del tiempo. Nuestro objetivo principal será analizar estos datos para responder preguntas clave relacionadas con las diferencias salariales y su evolución en función de diversos factores.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Este análisis nos permitirá identificar patrones, desigualdades y posibles tendencias en los salarios de personas con discapacidad, contribuyendo a una mejor comprensión de la situación actual y proporcionando información útil para futuras iniciativas de inclusión laboral.
+
+## Preguntas a responder
+
+- ¿Existe una diferencial salarial más pronunciada entre hombres y mujeres en función de una misma discapacidad?
+- ¿Existe una diferencia salarial dependiendo de discapacidades distintas (físicas vs sensoriales)?
+- ¿A lo largo de los años, han aumentado los salarios de los discapacitados (tanto físicas como sensoriales)?
+
+## Código
 
 ```{r cars}
 library(readr)
@@ -65,13 +73,8 @@ ggplot(df, aes(x = año, y = predictions, col=sexo)) + geom_point() + geom_line(
 # Resumen del modelo ajustado
 summary(model)
 ```
-## Preguntas a responder
 
-- ¿Existe una diferencial salarial más pronunciada entre hombres y mujeres en función de una misma discapacidad?
-- ¿Existe una diferencia salarial dependiendo de discapacidades distintas (físicas vs sensoriales)?
-- ¿A lo largo de los años, han aumentado los salarios de los discapacitados (tanto físicas como sensoriales)?
-
-## Limitaciones
+## Limitaciones encontradas
 
 - Se realizó un filtrado de datos del archivo 8534.csv en las categorías sexo, tipo de indicador, tipo de discapacidad y total, debido a que, estas contaban con datos negativos, no significativos para la práctica o datos insuficientes para llevar a cabo el análisis. 
 
